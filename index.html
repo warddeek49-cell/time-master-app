@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeMaster Pro | منصة الإنتاجية وإدارة الوقت</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Confetti Celebration -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+  <canvas id="confettiCanvas"></canvas>
+
+  <div class="app-layout">
+    
+    <!-- Top Unified Bar -->
+    <header class="top-nav glass-panel">
+      <div class="brand-group">
+        <div class="brand-icon">
+          <i data-lucide="clock-4" style="width: 22px; height: 22px;"></i>
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <h1 class="brand-title">TimeMaster</h1>
+            <span class="brand-badge">PRO</span>
+          </div>
+          <p class="brand-sub">إدارة الوقت والمهام الاستراتيجية</p>
+        </div>
+      </div>
+
+      <!-- Quick Compact KPI Stats in Header -->
+      <div class="header-stats">
+        <div class="header-stat-item">
+          <span class="stat-num" id="completedTasksStat" style="color: #6366f1;">0</span>
+          <span class="stat-lbl">مكتملة</span>
+        </div>
+        <div class="header-stat-sep"></div>
+        <div class="header-stat-item">
+          <span class="stat-num" id="pendingTasksStat" style="color: #3b82f6;">0</span>
+          <span class="stat-lbl">قيد الانتظار</span>
+        </div>
+        <div class="header-stat-sep"></div>
+        <div class="header-stat-item">
+          <span class="stat-num" id="pomodoroCountStat" style="color: #f43f5e;">0</span>
+          <span class="stat-lbl">جلسات تركيز</span>
+        </div>
+        <div class="header-stat-sep"></div>
+        <div class="header-stat-item" id="quranHeaderPill" style="cursor: pointer;" title="انقر لتعديل ورد القرآن">
+          <span style="font-size: 0.95rem;">📖</span>
+          <span class="stat-num" id="quranProgressStat" style="color: #10b981;">0/604</span>
+          <span class="stat-lbl">صفحة قرآن</span>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="header-actions">
+        <button id="backupBtn" class="btn-icon" title="نسخ احتياطي / استيراد">
+          <i data-lucide="database"></i>
+        </button>
+        <button id="soundToggleBtn" class="btn-icon" title="كتم / تفعيل الصوت">
+          <i data-lucide="volume-2" id="soundIcon"></i>
+        </button>
+        <button id="themeToggleBtn" class="btn-icon" title="تبديل المظهر">
+          <i data-lucide="sun" id="themeIcon"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Workspace Split: Sidebar & Matrix Workspace -->
+    <main class="workspace-grid">
+      
+      <!-- Right Sidebar: Pomodoro Focus Zone -->
+      <aside class="sidebar-zone">
+        
+        <!-- Pomodoro Card -->
+        <div class="pomodoro-box glass-panel">
+          <div class="pomodoro-modes">
+            <button class="mode-btn active" data-mode="work">تركيز (25د)</button>
+            <button class="mode-btn" data-mode="shortBreak">استراحة (5د)</button>
+            <button class="mode-btn" data-mode="longBreak">راحة (15د)</button>
+          </div>
+
+          <div class="timer-circle-wrap">
+            <svg class="timer-svg" viewBox="0 0 200 200">
+              <defs>
+                <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#6366f1" />
+                  <stop offset="100%" stop-color="#ec4899" />
+                </linearGradient>
+              </defs>
+              <circle class="timer-bg" cx="100" cy="100" r="88"></circle>
+              <circle id="timerProgressCircle" class="timer-bar" cx="100" cy="100" r="88"></circle>
+            </svg>
+            <div class="timer-center">
+              <span id="timerDisplay" class="timer-time">25:00</span>
+              <span id="timerStatusLabel" class="timer-status">جاهز للانطلاق</span>
+            </div>
+          </div>
+
+          <!-- Active Task Link -->
+          <div class="active-task-bar" id="activeTaskBar">
+            <i data-lucide="crosshair" style="color: var(--accent-primary); width: 15px; height: 15px; flex-shrink: 0;"></i>
+            <span class="active-task-title" id="activeTaskTitle">اختر مهمة للتركيز عليها</span>
+          </div>
+
+          <!-- Timer Buttons -->
+          <div class="timer-btns">
+            <button id="startTimerBtn" class="btn-primary">
+              <i data-lucide="play" id="playPauseIcon" style="width: 16px; height: 16px;"></i>
+              <span id="startBtnText">ابدأ التركيز</span>
+            </button>
+            <button id="resetTimerBtn" class="btn-secondary" title="إعادة">
+              <i data-lucide="rotate-ccw" style="width: 15px; height: 15px;"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dedicated Quran & Study Progress Box -->
+        <div class="quran-box glass-panel">
+          <div class="quran-header">
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-size: 1rem;">📖</span>
+              <span style="font-weight: 800; font-size: 0.8rem; color: #10b981;">ورد وحفظ القرآن الكريم</span>
+            </div>
+            <span class="quran-pct-badge" id="quranPctBadge">0%</span>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="quran-progress-track">
+            <div class="quran-progress-fill" id="quranProgressFill" style="width: 0%;"></div>
+          </div>
+
+          <!-- Counter Numbers & Controls -->
+          <div class="quran-counter-row">
+            <div class="quran-counter-text">
+              <span class="quran-current-val" id="quranCurrentVal">0</span>
+              <span style="color: var(--text-muted); font-size: 0.72rem;"> من أصل </span>
+              <span class="quran-target-val" id="quranTargetVal">604</span>
+              <span style="color: var(--text-muted); font-size: 0.72rem;"> صفحة</span>
+            </div>
+
+            <!-- Quick Step Buttons -->
+            <div class="quran-step-btns">
+              <button class="quran-btn" id="quranMinusBtn" title="إنقاص صفحة">-1</button>
+              <button class="quran-btn" id="quranPlusBtn" title="إنجاز صفحة">+1</button>
+              <button class="quran-btn plus-five" id="quranPlusFiveBtn" title="إنجاز 5 صفحات">+5</button>
+            </div>
+          </div>
+
+          <!-- Active Surah & Notes Input -->
+          <div class="quran-surah-row">
+            <input type="text" id="quranSurahInput" class="quran-surah-input" placeholder="اسم السورة الحالية / الجزء (مثال: البقرة - ص 15)">
+          </div>
+        </div>
+
+        <!-- Productivity Quote -->
+        <div class="quote-box glass-panel">
+          <p id="productivityQuote">"خيركم من تعلم القرآن وعلمه.. بركة وقتك تبدأ من وردك."</p>
+        </div>
+
+      </aside>
+
+      <!-- Left Main Section: Task Creation, Time-Blocking & Eisenhower Matrix -->
+      <section class="content-zone">
+        
+        <!-- Quick Creation Bar -->
+        <div class="create-bar glass-panel">
+          <form id="taskForm" class="task-form-inline">
+            <input 
+              type="text" 
+              id="taskTitleInput" 
+              class="input-clean" 
+              placeholder="اكتب مهمة جديدة... (اضغط Enter للإضافة السريعة)" 
+              required
+              autocomplete="off"
+            >
+            <select id="taskQuadrantSelect" class="select-clean">
+              <option value="q1">🔴 عاجل ومهم (Do First)</option>
+              <option value="q2" selected>🔵 مهم وغير عاجل (Schedule)</option>
+              <option value="q3">🟡 عاجل وغير مهم (Delegate)</option>
+              <option value="q4">🟢 غير مهم وغير عاجل (Eliminate)</option>
+            </select>
+            <button type="submit" class="btn-primary" style="padding: 7px 18px;">
+              <i data-lucide="plus" style="width: 16px; height: 16px;"></i>
+              <span>إضافة</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Time-Blocking Horizontal Strip -->
+        <div class="timeblock-strip glass-panel">
+          <div class="timeblock-label">
+            <i data-lucide="calendar" style="width: 14px; height: 14px; color: var(--accent-primary);"></i>
+            <span>ساعات اليوم:</span>
+          </div>
+          <div class="timeblock-scroll" id="timeSlotsContainer">
+            <!-- Dynamically populated 08:00 to 22:00 -->
+          </div>
+        </div>
+
+        <!-- Matrix Header Filter Controls -->
+        <div class="matrix-filter-bar">
+          <div class="matrix-title-wrap">
+            <h2>مصفوفة أيزنهاور لتحديد الأولويات</h2>
+          </div>
+          <div class="view-tabs">
+            <button class="tab-btn active" data-filter="all">جميع المهام</button>
+            <button class="tab-btn" data-filter="active">قيد التنفيذ</button>
+            <button class="tab-btn" data-filter="completed">المكتملة</button>
+          </div>
+        </div>
+
+        <!-- 4 Quadrants Matrix Grid (Responsive 2x2 filling remaining height) -->
+        <div class="matrix-grid-2x2">
+          
+          <!-- Q1 -->
+          <div class="quadrant-card q1 glass-panel">
+            <div class="quad-head">
+              <div class="quad-title-wrap">
+                <span class="quad-dot"></span>
+                <span class="quad-title">افعلها أولاً (Do First)</span>
+                <span class="quad-sub">عاجل ومهم</span>
+              </div>
+              <span class="quad-count" id="count-q1">0</span>
+            </div>
+            <div class="task-list" id="list-q1"></div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quadrant-card q2 glass-panel">
+            <div class="quad-head">
+              <div class="quad-title-wrap">
+                <span class="quad-dot"></span>
+                <span class="quad-title">خطط لها (Schedule)</span>
+                <span class="quad-sub">مهم وغير عاجل</span>
+              </div>
+              <span class="quad-count" id="count-q2">0</span>
+            </div>
+            <div class="task-list" id="list-q2"></div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quadrant-card q3 glass-panel">
+            <div class="quad-head">
+              <div class="quad-title-wrap">
+                <span class="quad-dot"></span>
+                <span class="quad-title">فوضها (Delegate)</span>
+                <span class="quad-sub">عاجل وغير مهم</span>
+              </div>
+              <span class="quad-count" id="count-q3">0</span>
+            </div>
+            <div class="task-list" id="list-q3"></div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quadrant-card q4 glass-panel">
+            <div class="quad-head">
+              <div class="quad-title-wrap">
+                <span class="quad-dot"></span>
+                <span class="quad-title">احذفها (Eliminate)</span>
+                <span class="quad-sub">غير مهم وغير عاجل</span>
+              </div>
+              <span class="quad-count" id="count-q4">0</span>
+            </div>
+            <div class="task-list" id="list-q4"></div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- Backup Modal -->
+    <div id="backupModal" class="modal-overlay">
+      <div class="modal-content">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+          <h3 style="font-size: 1.1rem; font-weight: 800;">النسخ الاحتياطي واستيراد البيانات</h3>
+          <button id="closeModalBtn" class="btn-icon" style="width: 32px; height: 32px;">
+            <i data-lucide="x"></i>
+          </button>
+        </div>
+        <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 18px; line-height: 1.5;">
+          تصدير أو استيراد كافة مهامك وإحصائياتك كملف JSON لتبقى محفوظة معك دائماً.
+        </p>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <button id="exportDataBtn" class="btn-primary" style="justify-content: center; width: 100%;">
+            <i data-lucide="download"></i>
+            <span>تصدير البيانات (JSON)</span>
+          </button>
+          <label class="btn-secondary" style="justify-content: center; width: 100%; cursor: pointer;">
+            <i data-lucide="upload"></i>
+            <span>استيراد ملف البيانات</span>
+            <input type="file" id="importFileInput" accept=".json" style="display: none;">
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Area -->
+    <div id="toastContainer" class="toast-container"></div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
