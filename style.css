@@ -103,9 +103,16 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+html {
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+body {
   width: 100%;
-  height: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   font-family: var(--font-main);
   background-color: var(--bg-base);
   background-image: var(--bg-gradient);
@@ -158,10 +165,9 @@ body::before {
   position: relative;
   z-index: 2;
   width: 100%;
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 10px 14px 12px;
+  padding: 10px 14px 16px;
   gap: 10px;
 }
 
@@ -304,16 +310,15 @@ body::before {
   display: grid;
   grid-template-columns: 295px 1fr;
   gap: 10px;
-  flex: 1;
-  min-height: 0;
+  align-items: start;
 }
 
-/* Sidebar Zone (Pomodoro & Ambience) */
+/* Sidebar Zone */
 .sidebar-zone {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  min-height: 0;
+  min-width: 0;
 }
 
 /* Pomodoro Interactive Box */
@@ -323,10 +328,10 @@ body::before {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
   justify-content: space-between;
   position: relative;
   overflow: hidden;
+  gap: 10px;
 }
 
 .pomodoro-box::after {
@@ -644,7 +649,7 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  min-height: 0;
+  min-width: 0;
 }
 
 /* Quick Task Creation Bar */
@@ -798,22 +803,18 @@ body::before {
   box-shadow: var(--shadow-sm);
 }
 
-/* 2x2 Matrix Cards (filling 100% of remaining viewport space) */
+/* 2x2 Matrix Cards */
 .matrix-grid-2x2 {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
   gap: 8px;
-  flex: 1;
-  min-height: 0; /* Absolutely crucial for 100vh lock */
 }
 
 .quadrant-card {
   padding: 10px 14px;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
+  min-height: 200px;
   position: relative;
   transition: transform var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
