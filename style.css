@@ -106,8 +106,6 @@
 html, body {
   width: 100%;
   height: 100%;
-  max-height: 100vh;
-  overflow: hidden; /* Strict zero-scroll for 100% zoom */
   font-family: var(--font-main);
   background-color: var(--bg-base);
   background-image: var(--bg-gradient);
@@ -155,12 +153,12 @@ body::before {
   border-color: var(--border-highlight);
 }
 
-/* App Container (Fills 1536x864 without overflow) */
+/* App Container */
 .app-layout {
   position: relative;
   z-index: 2;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   padding: 10px 14px 12px;
@@ -307,7 +305,7 @@ body::before {
   grid-template-columns: 295px 1fr;
   gap: 10px;
   flex: 1;
-  min-height: 0; /* Ensures 100vh containment */
+  min-height: 0;
 }
 
 /* Sidebar Zone (Pomodoro & Ambience) */
@@ -1099,4 +1097,217 @@ body::before {
   inset: 0;
   pointer-events: none;
   z-index: 9999;
+}
+
+/* ==========================================
+   RESPONSIVE - Tablet (max 1024px)
+   ========================================== */
+@media (max-width: 1024px) {
+  .app-layout {
+    padding: 8px 10px 10px;
+    gap: 8px;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 260px 1fr;
+    gap: 8px;
+  }
+
+  .header-stats {
+    gap: 10px;
+    padding: 5px 12px;
+  }
+
+  .stat-lbl {
+    display: none;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE - Mobile (max 768px)
+   ========================================== */
+@media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .app-layout {
+    padding: 8px;
+    gap: 8px;
+    min-height: 100vh;
+    height: auto;
+  }
+
+  /* Stack sidebar below content on mobile */
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    gap: 8px;
+    flex: none;
+  }
+
+  /* Move sidebar to bottom */
+  .sidebar-zone {
+    order: 2;
+  }
+
+  .content-zone {
+    order: 1;
+  }
+
+  /* Header responsive */
+  .top-nav {
+    height: auto;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .header-stats {
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+    padding: 6px 12px;
+  }
+
+  .stat-lbl {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  /* Matrix 2 columns on mobile */
+  .matrix-grid-2x2 {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    min-height: 400px;
+  }
+
+  .quadrant-card {
+    min-height: 180px;
+    max-height: 260px;
+    overflow-y: auto;
+  }
+
+  /* Task form stacked */
+  .task-form-inline {
+    flex-wrap: wrap;
+  }
+
+  .input-clean {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .select-clean {
+    flex: 1;
+    font-size: 0.75rem;
+  }
+
+  /* Matrix filter bar */
+  .matrix-filter-bar {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Timer smaller on mobile */
+  .timer-circle-wrap {
+    width: 130px;
+    height: 130px;
+  }
+
+  .timer-time {
+    font-size: 2rem;
+  }
+
+  /* Sidebar stacked */
+  .sidebar-zone {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .pomodoro-box {
+    flex: 1;
+    min-width: 240px;
+  }
+
+  .quran-box {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .quote-box {
+    width: 100%;
+  }
+}
+
+/* ==========================================
+   RESPONSIVE - Small Mobile (max 480px)
+   ========================================== */
+@media (max-width: 480px) {
+  .app-layout {
+    padding: 6px;
+    gap: 6px;
+  }
+
+  /* Stack matrix to 1 column */
+  .matrix-grid-2x2 {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+  }
+
+  .quadrant-card {
+    min-height: 140px;
+    max-height: 220px;
+  }
+
+  .brand-sub {
+    display: none;
+  }
+
+  .brand-title {
+    font-size: 1.1rem;
+  }
+
+  /* Sidebar fully stacked */
+  .sidebar-zone {
+    flex-direction: column;
+  }
+
+  .pomodoro-box,
+  .quran-box {
+    min-width: unset;
+    width: 100%;
+  }
+
+  .matrix-filter-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .tab-btn {
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+
+  .mode-btn {
+    font-size: 0.65rem;
+    padding: 4px 4px;
+  }
+
+  .header-stats {
+    gap: 8px;
+    padding: 5px 8px;
+    flex-wrap: wrap;
+  }
+
+  .header-stat-sep {
+    display: none;
+  }
 }
